@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <link rel="stylesheet" href="./index.css">
+</head>
+<body>
+    <div>
+        <div class="upBtn">图片上传</div>
+    </div>
+    <!--上传图片弹窗-->
+    <div class="mask"></div>
+    <div class="upBox">
+        <div class="innerBox">
+            <div class="title">
+                <p>上传图片窗口</p>
+                <p class="close">×</p>
+            </div>            
+            <div class="ul">
+               
+            </div>
+            <div class="changeBtn">
+                <p>选择图片</p>
+                <input type="file" class="changeImg">
+            </div>
+            <div class="sendBtn">上传图片</div>
+        </div>
+    </div>
+    <script>
+        let upArr = [];
+        document.querySelector(".upBtn").onclick = function(){
+            document.querySelector(".mask").style.display = "block";
+            document.querySelector(".upBox").style.display = "block"
+        }
+        document.querySelector(".changeImg").onchange = function(){
+            Array.from(this.files).forEach(file=>{
+                  let uploadItem = new UploadItem(file);
+                  uploadItem.creatHtml();
+                  upArr.push(uploadItem)
+            })
+        }
+        document.querySelector(".close").onclick = function(){
+            document.querySelector(".mask").style.display = "none";
+            document.querySelector(".upBox").style.display = "none"
+        }
+        document.querySelector(".sendBtn").onclick = function(){
+            async function queue(){          
+                for(let i = 0; i < upArr.length; i++){   
+                    console.log(i)                
+                   await upArr[i].upload();
+                
+                }
+            }
+            queue()
+        }
+        class UploadItem{
+            constructor(file){
+                this.file = file;
+                this.ele = ''
+            }
+            creatHtml(){
+                let fileReader = new FileReader();
+                fileReader.readAsDataURL(this.file);
+                let self = this;
+                fileReader.onload = function(){
+                    let li = document.createElement("div");
+                    li.className = 'li'
+                    li.innerHTML = `<span class="myProcess">
+                            <span class="plain"></span>                       
+                        </span>
+                        <img src="${this.result}" />`;
+                    document.querySelector(".ul").appendChild(li)
+                    self.ele = li
+                }
+                
+            }
+            upload(){
+                return new Promise(resolve=>{
+                    let formData = new FormData();
+                    formData.append("img",this.file);
+                    let xmlHttp = new XMLHttpRequest();
+                    xmlHttp.upload.onprogress = (evt)=>{
+                       this.ele.querySelector(".myProcess").style.display = "block";
+                       this.ele.querySelector(".plain").style.width = (evt.loaded/evt.total)*100+'%'
+                       this.ele.querySelector(".plain").innerHTML = parseInt((evt.loaded/evt.total)*100)+'%';
+                       if(evt.loaded == evt.total){
+                           resolve()
+                       }
+                    }
+                    xmlHttp.open("post",'http://localhost:4000/postImg',true);
+                    xmlHttp.send(formData)
+
+              })
+            }
+        }
+    </script>
+</body>
+</html>
