@@ -30,16 +30,18 @@
 .innerBox{
     position: relative;
     height: 100%;
+	padding: 10px 20px;
 }
 .title{
     width: 100%;
     display: flex;
     justify-content: space-between;
+	line-height: 20px;
 }
 .sendBtn{
     position: absolute;
-    bottom: 10px;
-    left: 50px;
+    bottom: 50px;
+    right: 50px;
     width: 100px;
     height: 40px;
     text-align: center;
@@ -50,6 +52,7 @@
     display: flex;
     justify-content: start;
     width: 100%;
+	margin-bottom: 10px;
 }
 .li{
     width: 100px;
@@ -85,6 +88,7 @@
     position: relative;
     border: 1px solid #dbdbdb;
     cursor: pointer;
+	text-align: center;
 }
 .changeImg{
     opacity: 0;
